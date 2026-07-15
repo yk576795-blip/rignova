@@ -1,47 +1,40 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import prisma from "@/lib/db";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const tradeInRequests = await db.tradeInRequest.findMany({
-      where: {
-        deletedAt: null,
-      },
+    const requests = await prisma.tradeInRequest.findMany({
+      where: { deletedAt: null },
       include: {
-        user: {
-          select: {
-            name: true,
-            email: true,
-            phone: true,
-          }
-        }
+        user: { select: { name: true, email: true, phone: true } },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    // Format the data to match the expected structure
-    const formattedRequests = tradeInRequests.map(request => ({
-      id: request.id,
-      customerName: request.user?.name || request.customerName || "Unknown",
-      customerEmail: request.user?.email || request.customerEmail || "Unknown",
-      customerPhone: request.user?.phone || request.customerPhone || "Unknown",
-      gpuModel: request.gpuModel,
-      gpuBrand: request.gpuBrand,
-      purchaseYear: request.purchaseYear,
-      condition: request.condition,
-      description: request.description,
-      estimatedValue: Number(request.estimatedValue),
-      finalOfferValue: request.finalOfferValue ? Number(request.finalOfferValue) : undefined,
-      status: request.status,
-      submissionDate: request.createdAt.toISOString(),
-      photos: request.photos || [],
-      adminNotes: request.adminNotes,
-      rejectionReason: request.rejectionReason,
-    }));
-
-    return Response.json(formattedRequests);
+    return Response.json(
+      requests.map((r) => ({
+        id: r.id,
+        // Prefer linked user data; fall back to guest fields
+        customerName: r.user?.name ?? r.guestName ?? "Unknown",
+        customerEmail: r.user?.email ?? r.guestEmail ?? "—",
+        customerPhone: r.user?.phone ?? r.guestPhone ?? "—",
+        gpuModel: r.gpuModel,
+        gpuBrand: r.gpuBrand,
+        purchaseYear: r.purchaseYear,
+        condition: r.condition,
+        description: r.description,
+        estimatedValue: Number(r.expectedPrice),
+        finalOfferValue: r.offeredPrice ? Number(r.offeredPrice) : null,
+        status: r.status,
+        submissionDate: r.createdAt.toISOString(),
+        // images is String[] in schema — adapt to { url } shape the page expects
+        photos: (r.images ?? []).map((url: string) => ({ url, description: "" })),
+        adminNotes: r.adminNotes,
+        rejectionReason: r.rejectionReason,
+      }))
+    );
   } catch (error) {
-    console.error("Failed to fetch trade-in requests:", error);
+    console.error("Trade-in GET error:", error);
     return Response.json([], { status: 500 });
   }
 }

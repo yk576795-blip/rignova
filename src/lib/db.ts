@@ -22,4 +22,7 @@ export const prisma = globalForPrisma.prisma ?? getPrismaClient();
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
+// `db` alias — used by admin routes
+export const db = prisma;
+
 export default prisma;

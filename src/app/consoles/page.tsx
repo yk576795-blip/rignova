@@ -1,10 +1,45 @@
-export default function ConsolesPage() {
+import { Gamepad2, Headphones, ShieldCheck } from "lucide-react";
+import { MarketplacePageShell } from "@/components/marketplace/marketplace-page-shell";
+import { getCatalogCollectionData } from "@/lib/catalog";
+
+export default async function ConsolesPage() {
+  const { category, products } = await getCatalogCollectionData("consoles", 6);
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="text-center">
-        <h1 className="font-display text-4xl font-extrabold text-foreground">Gaming Consoles</h1>
-        <p className="mt-4 text-lg text-muted">Explore the latest gaming consoles and accessories.</p>
-      </div>
-    </section>
+    <MarketplacePageShell
+      eyebrow="Console gaming"
+      title={category.name}
+      description={category.description || "Explore immersive console experiences with accessories, accessories bundles, and unbeatable launch-ready setups."}
+      stats={[
+        { label: "Popular brands", value: "Sony & more" },
+        { label: "Bundle ready", value: "Controllers + headsets" },
+        { label: "Fast delivery", value: "2-4 days" },
+        { label: "Secure checkout", value: "100% safe" },
+      ]}
+      benefits={[
+        {
+          title: "Launch-ready setups",
+          description: "Pick a console and pair it with the right accessories for the ultimate play session.",
+          icon: Gamepad2,
+        },
+        {
+          title: "Comfort upgrades",
+          description: "Find premium headsets, charging docks, and ergonomic add-ons for longer sessions.",
+          icon: Headphones,
+        },
+        {
+          title: "Warranty peace of mind",
+          description: "Shop with secure purchases and support on every console and accessory bundle.",
+          icon: ShieldCheck,
+        },
+      ]}
+      products={products}
+      emptyMessage="Console listings will appear here once the catalog is populated."
+      ctaLabel="Shop consoles"
+      ctaHref="/shop?category=consoles"
+      secondaryCtaLabel="Explore accessories"
+      secondaryCtaHref="/accessories"
+      productListTitle="Console and accessory favorites"
+    />
   );
 }

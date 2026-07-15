@@ -1,16 +1,23 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import prisma from "@/lib/db";
 
 export async function DELETE(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
 
-    await db.savedBuild.update({
+    const existing = await prisma.savedBuild.findUnique({
+      where: { id, deletedAt: null },
+    });
+    if (!existing) {
+      return Response.json({ error: "Build not found" }, { status: 404 });
+    }
+
+    await prisma.savedBuild.update({
       where: { id },
-      data: { deletedAt: new Date() }
+      data: { deletedAt: new Date() },
     });
 
     return Response.json({ success: true });

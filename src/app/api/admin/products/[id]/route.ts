@@ -239,6 +239,52 @@ export async function PUT(
   }
 }
 
+// PATCH: partial update (e.g. toggle isActive, isFeatured)
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+
+    // Only allow safe partial fields via PATCH
+    const patchSchema = z.object({
+      isActive: z.boolean().optional(),
+      isFeatured: z.boolean().optional(),
+      stock: z.number().int().min(0).optional(),
+      price: z.number().positive().optional(),
+      compareAtPrice: z.number().positive().optional().nullable(),
+    });
+
+    const parsed = patchSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten() },
+        { status: 422 }
+      );
+    }
+
+    const existing = await prisma.product.findUnique({
+      where: { id, deletedAt: null },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
+    const product = await prisma.product.update({
+      where: { id },
+      data: parsed.data,
+      select: { id: true, isActive: true, isFeatured: true, stock: true },
+    });
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error("Admin product PATCH error:", error);
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
+  }
+}
+
 // DELETE: soft delete product
 export async function DELETE(
   _req: NextRequest,

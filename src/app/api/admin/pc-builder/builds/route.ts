@@ -1,18 +1,13 @@
 import { NextRequest } from "next/server";
-import { db } from "@/lib/db";
+import prisma from "@/lib/db";
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
-    const savedBuilds = await db.savedBuild.findMany({
-      where: {
-        deletedAt: null,
-      },
+    const savedBuilds = await prisma.savedBuild.findMany({
+      where: { deletedAt: null },
       include: {
-        user: { 
-          select: { 
-            name: true, 
-            email: true 
-          } 
+        user: {
+          select: { name: true, email: true },
         },
         items: {
           include: {
@@ -20,49 +15,37 @@ export async function GET(request: NextRequest) {
               select: {
                 name: true,
                 price: true,
-                category: {
-                  select: { name: true }
-                }
-              }
-            }
-          }
-        }
+                type: { select: { name: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
 
-    // Calculate total price for each build
-    const buildsWithTotals = savedBuilds.map(build => ({
-      ...build,
-      totalPrice: build.items.reduce((total, item) => 
-        total + (Number(item.component.price) * item.quantity), 0
-      )
-    }));
-
-    return Response.json(buildsWithTotals);
+    return Response.json(
+      savedBuilds.map((build) => ({
+        id: build.id,
+        name: build.name,
+        totalPrice: Number(build.totalPrice),
+        isPublic: build.isPublic,
+        createdAt: build.createdAt.toISOString(),
+        user: build.user
+          ? { name: build.user.name, email: build.user.email }
+          : { name: "Guest", email: "—" },
+        items: build.items.map((item) => ({
+          quantity: item.quantity,
+          component: {
+            name: item.component.name,
+            price: Number(item.component.price),
+            category: { name: item.component.type.name },
+          },
+        })),
+      }))
+    );
   } catch (error) {
     console.error("Failed to fetch saved builds:", error);
     return Response.json([], { status: 500 });
-  }
-}
-
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
-    
-    if (!id) {
-      return Response.json({ error: "Build ID required" }, { status: 400 });
-    }
-
-    await db.savedBuild.update({
-      where: { id },
-      data: { deletedAt: new Date() }
-    });
-
-    return Response.json({ success: true });
-  } catch (error) {
-    console.error("Failed to delete build:", error);
-    return Response.json({ error: "Failed to delete build" }, { status: 500 });
   }
 }
