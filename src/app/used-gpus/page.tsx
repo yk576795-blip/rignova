@@ -10,6 +10,7 @@ export default async function UsedGPUsPage() {
       eyebrow="Certified used GPUs"
       title={category.name}
       description={category.description || "Browse performance-verified graphics cards that bring premium gaming power to a smarter budget."}
+      heroImage={category.image}
       stats={[
         { label: "Warranty-backed", value: "6-12 months" },
         { label: "Average savings", value: "Up to 35%" },

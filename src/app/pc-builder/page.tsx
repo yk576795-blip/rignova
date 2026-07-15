@@ -3,8 +3,22 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getCatalogCollectionData } from "@/lib/catalog";
+import { formatPrice } from "@/lib/utils";
 
-export default function PCBuilderPage() {
+export default async function PCBuilderPage() {
+  const [gamingPCs, gpus, accessories] = await Promise.all([
+    getCatalogCollectionData("gaming-pcs", 3),
+    getCatalogCollectionData("gpus", 3),
+    getCatalogCollectionData("accessories", 3),
+  ]);
+
+  const featuredProducts = [
+    ...(gamingPCs.products.slice(0, 2)),
+    ...(gpus.products.slice(0, 2)),
+    ...(accessories.products.slice(0, 2)),
+  ];
+
   const components = [
     {
       title: "CPU & motherboard",
@@ -69,6 +83,47 @@ export default function PCBuilderPage() {
               })}
             </CardContent>
           </Card>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border border-white/10 bg-surface/70 p-6 sm:p-8">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan">Featured parts</p>
+            <h2 className="mt-2 text-2xl font-semibold text-foreground">Recommended picks from the live catalog</h2>
+          </div>
+          <Button variant="outline" asChild className="cursor-pointer">
+            <Link href="/shop">Browse all products</Link>
+          </Button>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {featuredProducts.map((product) => (
+            <Link
+              key={product.id}
+              href={`/shop/${product.slug}`}
+              className="group overflow-hidden rounded-2xl border border-white/10 bg-surface-elevated/70 transition-transform duration-200 hover:-translate-y-1"
+            >
+              <div className="aspect-[4/3] overflow-hidden bg-surface">
+                {product.image && product.image !== "/images/placeholder.jpg" ? (
+                  <img src={product.image} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                ) : (
+                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-cyan/10 to-blue/10 text-xl font-semibold text-cyan/70">
+                    {product.brand.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">{product.category}</p>
+                <h3 className="mt-2 line-clamp-2 text-lg font-semibold text-foreground">{product.name}</h3>
+                <p className="mt-2 text-sm text-muted">{product.shortDescription || `Premium ${product.name.toLowerCase()} from ${product.brand}.`}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="text-lg font-semibold text-foreground">{formatPrice(product.price)}</p>
+                  <span className="text-sm font-medium text-cyan">{product.inStock ? "In stock" : "Out of stock"}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

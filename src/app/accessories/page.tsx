@@ -10,6 +10,7 @@ export default async function AccessoriesPage() {
       eyebrow="Premium peripherals"
       title={category.name}
       description={category.description || "Upgrade your setup with keyboards, mice, headsets, monitors, and performance-focused gear."}
+      heroImage={category.image}
       stats={[
         { label: "Peripheral range", value: "100+ SKUs" },
         { label: "RGB ready", value: "Premium picks" },

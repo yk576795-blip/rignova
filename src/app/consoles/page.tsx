@@ -10,6 +10,7 @@ export default async function ConsolesPage() {
       eyebrow="Console gaming"
       title={category.name}
       description={category.description || "Explore immersive console experiences with accessories, accessories bundles, and unbeatable launch-ready setups."}
+      heroImage={category.image}
       stats={[
         { label: "Popular brands", value: "Sony & more" },
         { label: "Bundle ready", value: "Controllers + headsets" },

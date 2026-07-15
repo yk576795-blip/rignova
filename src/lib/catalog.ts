@@ -1,4 +1,4 @@
-import prisma from "@/lib/db";
+import prisma from "./db";
 
 export interface CatalogProductSummary {
   id: string;
@@ -96,7 +96,7 @@ export async function getCatalogCollectionData(slug: string, limit = 6): Promise
         image: category.image,
         productCount: category._count.products,
       },
-      products: products.map((product) => {
+      products: products.map((product: (typeof products)[number]) => {
         const reviewCount = product.reviews.length;
         const avgRating =
           reviewCount > 0

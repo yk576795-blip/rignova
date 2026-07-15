@@ -93,27 +93,33 @@ export function MarketplacePageShell({
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-surface/70 p-5 backdrop-blur">
-            <div className="grid gap-3 sm:grid-cols-2">
-              {stats.length > 0 ? (
-                stats.map((item) => (
-                  <div key={item.label} className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
-                    <p className="text-2xl font-semibold text-foreground">{item.value}</p>
-                    <p className="mt-1 text-sm text-muted">{item.label}</p>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
-                    <p className="text-2xl font-semibold text-foreground">24/7</p>
-                    <p className="mt-1 text-sm text-muted">Expert support</p>
-                  </div>
-                  <div className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
-                    <p className="text-2xl font-semibold text-foreground">India</p>
-                    <p className="mt-1 text-sm text-muted">Fast shipping</p>
-                  </div>
-                </>
-              )}
-            </div>
+            {heroImage ? (
+              <div className="overflow-hidden rounded-xl border border-white/8 bg-surface-elevated/70">
+                <img src={heroImage} alt={title} className="h-64 w-full object-cover" />
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {stats.length > 0 ? (
+                  stats.map((item) => (
+                    <div key={item.label} className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
+                      <p className="text-2xl font-semibold text-foreground">{item.value}</p>
+                      <p className="mt-1 text-sm text-muted">{item.label}</p>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
+                      <p className="text-2xl font-semibold text-foreground">24/7</p>
+                      <p className="mt-1 text-sm text-muted">Expert support</p>
+                    </div>
+                    <div className="rounded-xl border border-white/8 bg-surface-elevated/70 p-4">
+                      <p className="text-2xl font-semibold text-foreground">India</p>
+                      <p className="mt-1 text-sm text-muted">Fast shipping</p>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
