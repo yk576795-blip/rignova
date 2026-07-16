@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 
-// Admin credentials — in production move these to env vars
-export const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin";
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "rignova@admin123";
+// Admin credentials — loaded from environment variables (required)
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "";
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "";
 export const SESSION_COOKIE = "rignova_admin_session";
 export const SESSION_SECRET =
   process.env.ADMIN_SESSION_SECRET ?? "rignova-admin-secret-key-change-in-production";

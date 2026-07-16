@@ -145,13 +145,7 @@ function LoginForm() {
             </Button>
           </form>
 
-          <div className="mt-6 rounded-lg border border-white/5 bg-surface-elevated px-4 py-3">
-            <p className="text-xs text-muted text-center leading-relaxed">
-              Default:{" "}
-              <code className="text-cyan">admin</code> /{" "}
-              <code className="text-cyan">rignova@admin123</code>
-            </p>
-          </div>
+
         </div>
 
         <div className="mt-6 text-center">
