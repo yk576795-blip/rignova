@@ -11,6 +11,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { username, password } = body;
 
+    // Reject immediately if env vars aren't configured — never allow empty-vs-empty match
+    if (!ADMIN_USERNAME || !ADMIN_PASSWORD) {
+      return NextResponse.json(
+        { error: "Admin credentials are not configured. Set ADMIN_USERNAME and ADMIN_PASSWORD environment variables." },
+        { status: 503 }
+      );
+    }
+
     if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
       return NextResponse.json(
         { error: "Invalid username or password" },

@@ -1,9 +1,16 @@
 import { cookies } from "next/headers";
 
-// Admin credentials — loaded from environment variables (required)
-export const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "";
-export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "";
+// Admin credentials — must be set via environment variables
+// Deliberately no fallback: missing vars cause login to always fail, not to open a backdoor
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? null;
+export const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? null;
 export const SESSION_COOKIE = "rignova_admin_session";
+
+if (!process.env.ADMIN_SESSION_SECRET) {
+  console.warn(
+    "[admin-auth] ADMIN_SESSION_SECRET is not set — sessions will be insecure. Set this env var in production."
+  );
+}
 export const SESSION_SECRET =
   process.env.ADMIN_SESSION_SECRET ?? "rignova-admin-secret-key-change-in-production";
 
